@@ -4,9 +4,13 @@
 
 1. Ensure you are in a WSL Environment
 
-2. Clone this directory.
+2. Clone this directory:
 
-3. Enter into the CY394_Project2 Directory:
+```bash
+git clone https://github.com/eliburtner/CY394_Project2.git
+```
+
+4. Enter into the CY394_Project2 Directory:
 
 ```bash
 cd CY394_Project2
