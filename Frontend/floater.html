@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Floater Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+    button {
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+    #message {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Floater Dashboard</h1>
+  <p id="welcome"></p>
+  <button onclick="logout()">Logout</button>
+
+  <h2>Available Tables</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Table ID</th>
+        <th>Table Number</th>
+        <th>Available Seats</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+
+  <p id="message"></p>
+
+  <script>
+    const userId = localStorage.getItem("user_id");
+    const username = localStorage.getItem("username");
+    const role = localStorage.getItem("role");
+
+    if (!userId || role !== "Floater") {
+      window.location.href = "login.html";
+    }
+
+    document.getElementById("welcome").textContent = `Welcome, ${username}`;
+
+    async function loadTables() {
+      const res = await fetch("http://localhost:5000/tables");
+      const tables = await res.json();
+
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = "";
+
+      tables.forEach(table => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${table.table_id}</td>
+          <td>${table.table_num}</td>
+          <td>${table.available_seats}</td>
+          <td>
+            ${
+              table.available_seats > 0
+                ? `<button onclick="claimSeat(${table.table_id})">Claim Seat</button>`
+                : `Full`
+            }
+          </td>
+        `;
+
+        tbody.appendChild(row);
+      });
+    }
+
+    async function claimSeat(tableId) {
+      const res = await fetch("http://localhost:5000/claim-seat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          user_id: parseInt(userId),
+          table_id: tableId
+        })
+      });
+
+      const data = await res.json();
+      const message = document.getElementById("message");
+
+      if (res.ok) {
+        message.style.color = "green";
+      } else {
+        message.style.color = "red";
+      }
+
+      message.textContent = data.message || data.error;
+      loadTables();
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+
+    loadTables();
+  </script>
+</body>
+</html>

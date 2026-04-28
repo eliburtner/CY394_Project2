@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      max-width: 500px;
+    }
+    label, select, input, button {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px;
+    }
+    #tableField {
+      display: none;
+    }
+    #message {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Register</h1>
+
+  <form id="registerForm">
+    <label>Username</label>
+    <input type="text" id="username" required>
+
+    <label>Password</label>
+    <input type="password" id="password" required>
+
+    <label>Role</label>
+    <select id="role" required>
+      <option value="">Select role</option>
+      <option value="Floater">Floater</option>
+      <option value="Table Commandant">Table Commandant</option>
+    </select>
+
+    <div id="tableField">
+      <label>Assigned Table Number</label>
+      <input type="number" id="table_num" min="1">
+    </div>
+
+    <button type="submit">Register</button>
+  </form>
+
+  <p id="message"></p>
+
+  <script>
+    const roleSelect = document.getElementById("role");
+    const tableField = document.getElementById("tableField");
+    const registerForm = document.getElementById("registerForm");
+    const message = document.getElementById("message");
+
+    roleSelect.addEventListener("change", () => {
+      if (roleSelect.value === "Table Commandant") {
+        tableField.style.display = "block";
+      } else {
+        tableField.style.display = "none";
+      }
+    });
+
+    registerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value,
+        role: document.getElementById("role").value,
+        table_num: document.getElementById("table_num").value || null
+      };
+
+      const res = await fetch("http://localhost:5000/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        message.style.color = "green";
+        message.textContent = data.message;
+      } else {
+        message.style.color = "red";
+        message.textContent = data.error;
+      }
+    });
+  </script>
+</body>
+</html>
