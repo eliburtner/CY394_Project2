@@ -1,0 +1,30 @@
+services:
+  frontend:
+    image: phase2-front
+    ports: 
+      - "8080:80"
+    networks:
+      - phase2-network
+  backend:
+    image: phase2-flask
+    ports: 
+      - "5000:5000"
+    networks:
+      - phase2-network
+  db:
+    image: phase2-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: phase2-mysql-database
+      MYSQL_USER: burt
+      MYSQL_PASSWORD: 123
+    networks:
+      - phase2-network
+    volumes:
+      - phase2-mysql-vol:/var/lib/mysql
+networks:
+  phase2-network:
+    driver: bridge
+volumes:
+  phase2-mysql-vol:
+    driver: local
