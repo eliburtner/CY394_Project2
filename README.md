@@ -1,4 +1,4 @@
-# CY394 Phase 2
+# CY394 Project 2
 
 ## Instructions
 
