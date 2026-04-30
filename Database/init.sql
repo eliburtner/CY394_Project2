@@ -1,4 +1,4 @@
-CREATE DATABASE `phase2-mysql-database`;
+CREATE DATABASE IF NOT EXISTS `phase2-mysql-database`;
 USE `phase2-mysql-database`;
 
 CREATE TABLE users (

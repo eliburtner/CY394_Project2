@@ -60,7 +60,7 @@
     document.getElementById("welcome").textContent = `Welcome, ${username}`;
 
     async function loadTables() {
-      const res = await fetch("http://localhost:5000/tables");
+      const res = await fetch("/api/tables");
       const tables = await res.json();
 
       const tbody = document.getElementById("tableBody");
@@ -87,7 +87,7 @@
     }
 
     async function claimSeat(tableId) {
-      const res = await fetch("http://localhost:5000/claim-seat", {
+      const res = await fetch("/api/claim-seat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

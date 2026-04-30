@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: ay262-parker-namespace
+spec:
+  replicas: 1
+  selecter:
+    matchlabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: seat-scout-frontend
+        ports:
+        - containerPort: 80

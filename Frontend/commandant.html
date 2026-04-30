@@ -63,7 +63,7 @@
 
       const availableSeats = parseInt(document.getElementById("available_seats").value);
 
-      const res = await fetch("http://localhost:5000/update-seats", {
+      const res = await fetch("/api/update-seats", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
