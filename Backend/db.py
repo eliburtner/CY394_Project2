@@ -1,6 +1,7 @@
 import flask
 import mysql.connector
 import click
+import os
 from flask import current_app
 from flask import g
 
@@ -11,8 +12,11 @@ def get_db():
     """
     if "db" not in g:
         g.db = mysql.connector.connect(
-                host="db", user='burt', password='123', database='phase2-mysql-database'
-            )
+            host=os.environ.get("MYSQL_HOST", "mysql"),
+            user=os.environ.get("MYSQL_USER", "root"),
+            password=os.environ.get("MYSQL_PASSWORD", "password"),
+            database=os.environ.get("MYSQL_DB", "phase2-mysql-database")
+        )
         print("Connected db:")
     
     return g.db

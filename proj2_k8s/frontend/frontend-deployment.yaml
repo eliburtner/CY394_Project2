@@ -5,8 +5,8 @@ metadata:
   namespace: ay262-parker-namespace
 spec:
   replicas: 1
-  selecter:
-    matchlabels:
+  selector:
+    matchLabels:
       app: frontend
   template:
     metadata:
@@ -15,6 +15,14 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: seat-scout-frontend
+        image: trying72/seat-scout-frontend:latest
         ports:
         - containerPort: 80
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+

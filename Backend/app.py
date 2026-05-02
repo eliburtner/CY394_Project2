@@ -1,17 +1,37 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_socketio import SocketIO, emit
 import mysql.connector
 from db import get_db, init_app
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'your-secret-key' # Required for session support
+
 CORS(app)
 init_app(app)
 
+# Initalize SocketIO with Flask app
+# async_mode determines the underlying async framework
+socketio = SocketIO(
+    app,
+    cors_allowed_origins="*", # Allow all origins (configure for production)
+    async_mode='eventlet', # Use eventlet for async (alternatives: gevent, threading)
+    ping_timeout=60, # Seconds before considering connection dead
+    ping_interval=25 # Seconds between ping packets
+)
 
 @app.route("/")
 def home():
     return "Flask backend is running"
 
+@socketio.on("connect")
+def handle_connect():
+    print(f"Client connect: {request.sid}")
+    emit("server_message", {"message": "Connected to SeatScout WebSocket"})
+
+@socketio.on("disconnect")
+def handle_disconnect():
+    print(f"Client disconnected: {request.sid}")
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -196,6 +216,15 @@ def claim_seat():
 
         db.commit()
 
+        cursor.execute(
+            "SELECT table_id, table_num, available_seats FROM tables WHERE table_id = %s",
+            (table_id,)
+        )
+
+        updated_table = cursor.fetchone()
+
+        socketio.emit("seat_update", updated_table)
+
         return jsonify({
             "message": "seat claimed successfully",
             "user_id": user_id,
@@ -260,7 +289,15 @@ def update_seats():
             (available_seats, table_id)
         )
 
+        updated_table = {
+            "table_id": table_id,
+            "table_num": table["table_num"],
+            "available_seats": available_seats
+        }
+
         db.commit()
+
+        socketio.emit("seat_update", updated_table)
 
         return jsonify({
             "message": "available seats updated successfully",
@@ -275,6 +312,6 @@ def update_seats():
     finally:
         cursor.close()
 
-
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    # Use socketio.run() instead of app.run() for WebSocket support
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)

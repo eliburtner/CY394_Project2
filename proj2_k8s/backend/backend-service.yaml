@@ -5,7 +5,8 @@ metadata:
   namespace: ay262-parker-namespace
 spec:
   selector:
-    app: frontend
+    app: backend
   ports:
     - port: 5000
       targetPort: 5000
+  type: ClusterIP
