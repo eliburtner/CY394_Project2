@@ -15,14 +15,30 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: trying72/seat-scout-frontend:latest
+        image: trying72/seat-scout-frontend:v1
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
+
         resources:
           requests:
             cpu: "50m"
             memory: "128Mi"
+            ephemeral-storage: "128Mi"
           limits:
             cpu: "200m"
             memory: "256Mi"
+            ephemeral-storage: "256Mi"
+        
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 3
+          periodSeconds: 3
+
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+
 

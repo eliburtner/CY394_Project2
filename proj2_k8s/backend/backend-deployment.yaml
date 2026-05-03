@@ -11,14 +11,15 @@ spec:
   template:
     metadata:
       labels:
-        app:
-          backend
+        app: backend
     spec:
       containers:
       - name: backend
-        image: trying72/seat-scout-backend:latest
+        image: trying72/seat-scout-backend:v1
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
+
         env:
         - name: MYSQL_HOST
           value: mysql
@@ -28,10 +29,26 @@ spec:
           value: password
         - name: MYSQL_DB
           value: phase2-mysql-database
+
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+
         resources:
           requests:
             cpu: "100m"
             memory: "256Mi"
+            ephemeral-storage: "256Mi"
           limits:
             cpu: "300m"
             memory: "512Mi"
+            ephemeral-storage: "512Mi"
+
+        securityContext:
+          runAsUser: 10001
+          runAsGroup: 10001
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
