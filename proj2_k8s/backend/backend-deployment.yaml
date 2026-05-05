@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: trying72/seat-scout-backend:v1
+        image: trying72/seat-scout-backend:v3
         imagePullPolicy: Always
         ports:
         - containerPort: 5000

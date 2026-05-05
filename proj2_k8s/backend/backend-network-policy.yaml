@@ -26,3 +26,10 @@ spec:
       ports:
         - protocol: TCP
           port: 3306
+    - to:
+      - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
