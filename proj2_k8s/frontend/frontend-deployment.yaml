@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
-  namespace: ay262-parker-namespace
+  namespace: ay262-elijah-namespace
 spec:
   replicas: 1
   selector:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: trying72/seat-scout-frontend:v1
+        image: eliburtner/seat-scout-frontend:v1
         imagePullPolicy: Always
         ports:
         - containerPort: 80

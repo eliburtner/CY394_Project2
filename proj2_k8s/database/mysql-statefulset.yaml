@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mysql
-  namespace: ay262-parker-namespace
+  namespace: ay262-elijah-namespace
 spec:
   serviceName: mysql
   replicas: 1

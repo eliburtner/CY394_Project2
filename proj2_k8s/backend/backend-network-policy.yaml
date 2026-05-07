@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: backend-network-policy
-  namespace: ay262-parker-namespace
+  namespace: ay262-elijah-namespace
 spec:
   podSelector:
     matchLabels:

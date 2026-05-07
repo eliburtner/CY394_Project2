@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request, redirect, render_template, session, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 import mysql.connector
@@ -33,7 +33,7 @@ def handle_connect():
 def handle_disconnect():
     print(f"Client disconnected: {request.sid}")
 
-@app.route("/register", methods=["POST"])
+@app.route("/api/register", methods=["POST"])
 def register():
     data = request.get_json()
 
@@ -45,38 +45,36 @@ def register():
     if not username or not password or not role:
         return jsonify({"error": "username, password, and role are required"}), 400
 
-    if role not in ["Floater", "Table Commandant"]:
-        return jsonify({"error": "role must be either 'Floater' or 'Table Commandant'"}), 400
+    if role not in ["Floater", "Table Commandant", "Admin"]:
+        return jsonify({"error": "role must be 'Floater', 'Table Commandant', or 'Admin'"}), 400
 
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
     try:
-        # Check if username already exists
         cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
         existing_user = cursor.fetchone()
+
         if existing_user is not None:
             return jsonify({"error": "username already exists"}), 400
 
-        # If commandant, table number is required
         if role == "Table Commandant":
             if table_num is None or str(table_num).strip() == "":
                 return jsonify({"error": "table_num is required for Table Commandant"}), 400
 
-            # Make sure table number is not already taken
             cursor.execute("SELECT * FROM tables WHERE table_num = %s", (table_num,))
             existing_table = cursor.fetchone()
+
             if existing_table is not None:
                 return jsonify({"error": "that table number is already registered"}), 400
 
-        # Insert the user
         cursor.execute(
             "INSERT INTO users (username, password, role) VALUES (%s, %s, %s)",
             (username, password, role)
         )
+
         user_id = cursor.lastrowid
 
-        # If commandant, create their table
         if role == "Table Commandant":
             cursor.execute(
                 "INSERT INTO tables (table_num, user_id, available_seats) VALUES (%s, %s, %s)",
@@ -85,11 +83,19 @@ def register():
 
         db.commit()
 
+        if role == "Floater":
+            redirect_url = "/floater.html"
+        elif role == "Table Commandant":
+            redirect_url = "/commandant.html"
+        elif role == "Admin":
+            redirect_url = "/admin.html"
+
         return jsonify({
             "message": "registration successful",
             "user_id": user_id,
             "username": username,
-            "role": role
+            "role": role,
+            "redirect": redirect_url
         }), 201
 
     except Exception as e:

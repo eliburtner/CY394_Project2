@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
-  namespace: ay262-parker-namespace
+  namespace: ay262-elijah-namespace
 spec:
   replicas: 1
   selector:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: trying72/seat-scout-backend:v3
+        image: eliburtner/seat-scout-backend:v1
         imagePullPolicy: Always
         ports:
         - containerPort: 5000

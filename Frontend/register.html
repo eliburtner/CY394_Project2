@@ -39,6 +39,7 @@
       <option value="">Select role</option>
       <option value="Floater">Floater</option>
       <option value="Table Commandant">Table Commandant</option>
+      <option value="Admin">Admin</option>
     </select>
 
     <div id="tableField">
@@ -62,6 +63,7 @@
         tableField.style.display = "block";
       } else {
         tableField.style.display = "none";
+        document.getElementById("table_num").value = "";
       }
     });
 
@@ -86,8 +88,11 @@
       const data = await res.json();
 
       if (res.ok) {
-        message.style.color = "green";
-        message.textContent = data.message;
+        localStorage.setItem("user_id", data.user_id);
+        localStorage.setItem("username", data.username);
+        localStorage.setItem("role", data.role);
+
+        window.location.href = data.redirect;
       } else {
         message.style.color = "red";
         message.textContent = data.error;
