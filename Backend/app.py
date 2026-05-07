@@ -86,9 +86,11 @@ def register():
                 "INSERT INTO tables (table_num, user_id, available_seats) VALUES (%s, %s, %s)",
                 (table_num, user_id, 0)
             )
+
+            db.commit()
             table_id = cursor.lastrowid
 
-        db.commit()
+
 
         return jsonify({
             "message": "Registration successful",
