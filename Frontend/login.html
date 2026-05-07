@@ -71,11 +71,17 @@
       if (data.table_id) {
         localStorage.setItem("table_id", data.table_id);
       }
+      
+      if (data.table_num) {
+        localStorage.setItem("table_num", data.table_num);
+      }
 
       if (data.role === "Floater") {
         window.location.href = "floater.html";
       } else if (data.role === "Table Commandant") {
         window.location.href = "commandant.html";
+      } else if (data.role === "Admin") {
+        window.location.href = "admin.html";
       }
     });
   </script>

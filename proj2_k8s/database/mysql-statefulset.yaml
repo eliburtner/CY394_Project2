@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mysql
-  namespace: ay262-elijah-namespace
+  namespace: ay262-parker-namespace
 spec:
   serviceName: mysql
   replicas: 1
@@ -26,13 +26,11 @@ spec:
             port: 3306
           initialDelaySeconds: 3
           periodSeconds: 3
-      
         env:
         - name: MYSQL_ROOT_PASSWORD
           value: "password"
         - name: MYSQL_DATABASE
           value: "phase2-mysql-database"
-
         resources:
           requests:
             cpu: "100m"
@@ -45,10 +43,15 @@ spec:
         volumeMounts:
         - name: mysql-storage
           mountPath: /var/lib/mysql
-
+        - name: mysql-init-script
+          mountPath: /docker-entrypoint-initdb.d/init.sql
+          subPath: init.sql
         securityContext:
           allowPrivilegeEscalation: false
-
+      volumes:
+      - name: mysql-init-script
+        configMap:
+          name: mysql-init-script
   volumeClaimTemplates:
   - metadata:
       name: mysql-storage
@@ -57,4 +60,4 @@ spec:
       resources:
         requests:
           storage: 10Gi
-      storageClassName: local-path
+      storageClassName: hostpath

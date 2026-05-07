@@ -2,6 +2,7 @@ from flask import Flask, request, redirect, render_template, session, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 import mysql.connector
+import re
 from db import get_db, init_app
 
 app = Flask(__name__)
@@ -45,7 +46,7 @@ def register():
     if not username or not password or not role:
         return jsonify({"error": "username, password, and role are required"}), 400
 
-    if role not in ["Floater", "Table Commandant", "Admin"]:
+    if role not in ["Floater", "Table Commandant"]:
         return jsonify({"error": "role must be 'Floater', 'Table Commandant', or 'Admin'"}), 400
 
     db = get_db()
@@ -57,11 +58,15 @@ def register():
 
         if existing_user is not None:
             return jsonify({"error": "username already exists"}), 400
+        
+        table_id = None
 
         if role == "Table Commandant":
             if table_num is None or str(table_num).strip() == "":
                 return jsonify({"error": "table_num is required for Table Commandant"}), 400
-
+            table_num = str(table_num).strip().upper()
+            if not re.match(r"^\d+[A-F]$", table_num):
+                return jsonify({"error": "table_num must end with a capital letter A-F, like 1A or 12F"}), 400
             cursor.execute("SELECT * FROM tables WHERE table_num = %s", (table_num,))
             existing_table = cursor.fetchone()
 
@@ -74,28 +79,24 @@ def register():
         )
 
         user_id = cursor.lastrowid
+        table_id = None
 
         if role == "Table Commandant":
             cursor.execute(
                 "INSERT INTO tables (table_num, user_id, available_seats) VALUES (%s, %s, %s)",
                 (table_num, user_id, 0)
             )
+            table_id = cursor.lastrowid
 
         db.commit()
 
-        if role == "Floater":
-            redirect_url = "/floater.html"
-        elif role == "Table Commandant":
-            redirect_url = "/commandant.html"
-        elif role == "Admin":
-            redirect_url = "/admin.html"
-
         return jsonify({
-            "message": "registration successful",
+            "message": "Registration successful",
             "user_id": user_id,
             "username": username,
             "role": role,
-            "redirect": redirect_url
+            "table_id": table_id,
+            "table_num": table_num if role == "Table Commandant" else None
         }), 201
 
     except Exception as e:
@@ -106,7 +107,7 @@ def register():
         cursor.close()
 
 
-@app.route("/login", methods=["POST"])
+@app.route("/api/login", methods=["POST"])
 def login():
     data = request.get_json()
 
@@ -156,7 +157,7 @@ def login():
         cursor.close()
 
 
-@app.route("/tables")
+@app.route("/api/tables")
 def tables():
     db = get_db()
     cursor = db.cursor(dictionary=True)
@@ -173,7 +174,7 @@ def tables():
         cursor.close()
 
 
-@app.route("/claim-seat", methods=["POST"])
+@app.route("/api/claim-seat", methods=["POST"])
 def claim_seat():
     data = request.get_json()
 
@@ -249,7 +250,7 @@ def claim_seat():
         cursor.close()
 
 
-@app.route("/update-seats", methods=["POST"])
+@app.route("/api/update-seats", methods=["POST"])
 def update_seats():
     data = request.get_json()
 

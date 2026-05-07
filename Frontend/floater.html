@@ -34,6 +34,16 @@
   <button onclick="logout()">Logout</button>
 
   <h2>Available Tables</h2>
+  <label>Filter by Mess Hall Wing</label>
+  <select id="letterFilter" onchange="loadTables()">
+    <option value="">All</option>
+    <option value="A">A</option>
+    <option value="B">B</option>
+    <option value="C">C</option>
+    <option value="D">D</option>
+    <option value="E">E</option>
+    <option value="F">F</option>
+</select>
   <table>
     <thead>
       <tr>
@@ -63,10 +73,16 @@
       const res = await fetch("/api/tables");
       const tables = await res.json();
 
+      const selectedLetter = document.getElementById("letterFilter").value;
+
+      const filteredTables = selectedLetter
+        ? tables.filter(table => String(table.table_num).toUpperCase().endsWith(selectedLetter))
+        : tables;
+
       const tbody = document.getElementById("tableBody");
       tbody.innerHTML = "";
 
-      tables.forEach(table => {
+      filteredTables.forEach(table => {
         const row = document.createElement("tr");
 
         row.innerHTML = `

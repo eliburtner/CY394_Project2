@@ -39,12 +39,11 @@
       <option value="">Select role</option>
       <option value="Floater">Floater</option>
       <option value="Table Commandant">Table Commandant</option>
-      <option value="Admin">Admin</option>
     </select>
 
     <div id="tableField">
       <label>Assigned Table Number</label>
-      <input type="number" id="table_num" min="1">
+      <input type="text" id="table_num">
     </div>
 
     <button type="submit">Register</button>
@@ -69,7 +68,6 @@
 
     registerForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-
       const payload = {
         username: document.getElementById("username").value,
         password: document.getElementById("password").value,
@@ -91,8 +89,22 @@
         localStorage.setItem("user_id", data.user_id);
         localStorage.setItem("username", data.username);
         localStorage.setItem("role", data.role);
+        if (data.table_id) {
+          localStorage.setItem("table_id", data.table_id);
+        }
 
-        window.location.href = data.redirect;
+        if (data.table_num) {
+          localStorage.setItem("table_num", data.table_num);
+        }
+        localStorage.setItem("table_num", data.table_num);
+
+        if (data.role === "Floater") {
+          window.location.href = "floater.html";
+        } else if (data.role === "Table Commandant") {
+          window.location.href = "commandant.html";
+        } else if (data.role === "Admin") {
+          window.location.href = "admin.html";
+        }
       } else {
         message.style.color = "red";
         message.textContent = data.error;

@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: mysql-network-policy
-  namespace: ay262-elijah-namespace
+  namespace: ay262-parker-namespace
 spec:
   podSelector:
     matchLabels:

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
-  namespace: ay262-elijah-namespace
+  namespace: ay262-parker-namespace
 spec:
   selector:
     app: backend

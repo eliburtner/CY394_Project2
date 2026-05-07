@@ -32,7 +32,7 @@
   <button onclick="logout()">Logout</button>
 
   <div id="tableInfo">
-    <p><strong>Assigned Table ID:</strong> <span id="tableIdDisplay"></span></p>
+    <p><strong>Assigned Table Number:</strong> <span id="tableNumDisplay"></span></p>
   </div>
 
   <h2>Update Available Seats</h2>
@@ -50,13 +50,14 @@
     const username = localStorage.getItem("username");
     const role = localStorage.getItem("role");
     const tableId = localStorage.getItem("table_id");
+    const tableNum = localStorage.getItem("table_num");
 
     if (!userId || role !== "Table Commandant") {
       window.location.href = "login.html";
     }
 
     document.getElementById("welcome").textContent = `Welcome, ${username}`;
-    document.getElementById("tableIdDisplay").textContent = tableId || "Not found";
+    document.getElementById("tableNumDisplay").textContent = tableNum || "Not found";
 
     document.getElementById("seatForm").addEventListener("submit", async (e) => {
       e.preventDefault();
